@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup as bs
 import requests
 
-requests.urllib3.disable_warnings()
 
 
 class Main:
