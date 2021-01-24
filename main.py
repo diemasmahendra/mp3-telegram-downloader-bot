@@ -99,7 +99,10 @@ def index():
         new_msg = request.get_json()
         if "message" in str(new_msg):
             print(new_msg)
-            mp._received_msg(new_msg["message"])
+            if new_msg.get('message'):
+                mp._received_msg(new_msg["message"])
+            else:
+                mp._received_msg(new_msg)
             return "ok"
     else:
         return 'Ok'
