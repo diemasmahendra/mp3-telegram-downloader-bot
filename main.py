@@ -98,6 +98,7 @@ def index():
     if request.method == 'POST':
         new_msg = request.get_json()
         if "message" in str(new_msg):
+            print(new_msg)
             mp._received_msg(new_msg["message"])
             return "ok"
     else:
