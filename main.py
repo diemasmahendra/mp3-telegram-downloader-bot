@@ -93,14 +93,15 @@ class Downloader:
 mp = Downloader()
 
 
-@app.route("/", methods=["POST"])
+@app.route("/", methods=["POST", "GET"])
 def index():
-    new_msg = request.get_json()
-    if "message" in str(new_msg):
-        mp._received_msg(new_msg["message"])
-        return "ok"
-
-
+    if request.method == 'POST':
+        new_msg = request.get_json()
+        if "message" in str(new_msg):
+            mp._received_msg(new_msg["message"])
+            return "ok"
+    else:
+        return 'Ok'
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(
         os.environ.get("PORT", "5000")), debug=True)
