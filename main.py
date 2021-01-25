@@ -72,12 +72,17 @@ class Downloader:
                             )
                             self.__position.append(
                                 dict(uid=uid, position="waitmsg"))
-                        elif pesan.startswith('/start'):
-                            bot.sendMessage(uid,'Penggunaan /dl [query] \nContoh: /dl Noah')
+                        elif pesan.startswith("/start"):
+                            bot.sendMessage(
+                                uid, "Penggunaan /dl [query] \nContoh: /dl Noah"
+                            )
                         else:
                             self._unduh(uid, query[1])
                     else:
-                        bot.sendMessage(uid, "Pesan tidak dikenali\n'Penggunaan /dl [query] \nContoh: /dl Noah")
+                        bot.sendMessage(
+                            uid,
+                            "Pesan tidak dikenali\nPenggunaan /dl [query] \nContoh: /dl Noah",
+                        )
             else:
                 bot.sendMessage(
                     uid, "Bot hanya mengenali pesan yang berupa text ")
@@ -102,18 +107,20 @@ mp = Downloader()
 
 @app.route("/", methods=["POST", "GET"])
 def index():
-    if request.method == 'POST':
+    if request.method == "POST":
         new_msg = request.get_json()
         if "message" in str(new_msg):
             print(new_msg)
-            if new_msg.get('message'):
+            if new_msg.get("message"):
                 mp._received_msg(new_msg["message"])
             else:
-                if new_msg.get('callback_query'):
-                    mp._received_msg(new_msg['callback_query'])
+                if new_msg.get("callback_query"):
+                    mp._received_msg(new_msg["callback_query"])
         return "ok"
     else:
-        return 'Ok'
+        return "Ok"
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(
         os.environ.get("PORT", "5000")), debug=True)
