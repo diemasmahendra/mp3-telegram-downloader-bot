@@ -72,10 +72,12 @@ class Downloader:
                             )
                             self.__position.append(
                                 dict(uid=uid, position="waitmsg"))
+                        elif pesan.startswith('/start'):
+                            bot.sendMessage(uid,'Penggunaan /dl [query] \nContoh: /dl Noah')
                         else:
                             self._unduh(uid, query[1])
                     else:
-                        bot.sendMessage(uid, "Pesan tidak dikenali")
+                        bot.sendMessage(uid, "Pesan tidak dikenali\n'Penggunaan /dl [query] \nContoh: /dl Noah")
             else:
                 bot.sendMessage(
                     uid, "Bot hanya mengenali pesan yang berupa text ")
