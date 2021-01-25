@@ -1,6 +1,7 @@
 from telepot.namedtuple import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
 from flask import Flask, request
 from unduh import Main
+import eyed3
 import requests
 import telepot
 import time
@@ -40,6 +41,10 @@ class Downloader:
                             now = str(int(time.time())) + ".mp3"
                             with open(now, "wb") as f:
                                 f.write(a)
+                            tag = eyed3.load(now)
+                            tag.tag.artist = "Ismi downloader"
+                            tag.tag.album = "@ismrwtbot"
+                            tag.tag.save()
                             bot.sendAudio(uid, open(now, "rb"), title=judul)
                             os.system("rm " + now)
                             return
@@ -102,8 +107,9 @@ def index():
             if new_msg.get('message'):
                 mp._received_msg(new_msg["message"])
             else:
-                mp._received_msg(new_msg['callback_query'])
-            return "ok"
+                if new_msg.get('callback_query'):
+                    mp._received_msg(new_msg['callback_query'])
+        return "ok"
     else:
         return 'Ok'
 if __name__ == "__main__":
