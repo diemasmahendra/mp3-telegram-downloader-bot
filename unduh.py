@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup as bs
 import requests
+import re
 
 
 
@@ -31,4 +32,9 @@ class Main:
         )
         for i in a.find_all('a', {'class': 'shadow-xl'}):
             if '128 kbps' in str(i):
-                return i.get('href')
+                size = re.findall('">(.*?) MB</div >', a)
+                if size:
+                    if int(size.split('.')[0]) <= 5:
+                        return i.get('href')
+        else:
+            return None

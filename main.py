@@ -37,17 +37,20 @@ class Downloader:
                                 msg_identifier=ident, text="Downloading %s" % judul
                             )
                             url = self._song.get_source(new_msg["data"])
-                            a = requests.get(url).content
-                            now = str(int(time.time())) + ".mp3"
-                            with open(now, "wb") as f:
-                                f.write(a)
-                            tag = eyed3.load(now)
-                            tag.tag.artist = "Ismi downloader"
-                            tag.tag.album = "@ismrwtbot"
-                            tag.tag.save()
-                            bot.sendAudio(uid, open(now, "rb"), title=judul)
-                            os.system("rm " + now)
-                            return
+                            if url:
+                                a = requests.get(url).content
+                                now = str(int(time.time())) + ".mp3"
+                                with open(now, "wb") as f:
+                                    f.write(a)
+                                tag = eyed3.load(now)
+                                tag.tag.artist = "Ismi downloader"
+                                tag.tag.album = "@ismrwtbot"
+                                tag.tag.save()
+                                bot.sendAudio(uid, open(now, "rb"), title=judul)
+                                os.system("rm " + now)
+                                return
+                            else:
+                                bot.sendMessage(uid, "Ukuran %s terlalu besar" % judul)
             return
         else:
             pesan = new_msg.get("text")
@@ -76,7 +79,8 @@ class Downloader:
                             self._unduh(uid, query[1])
                     elif pesan.startswith("/start"):
                         bot.sendMessage(
-                                uid, "Penggunaan /dl [query] \nContoh: /dl Noah")
+                            uid, "Penggunaan /dl [query] \nContoh: /dl Noah"
+                        )
                     else:
                         bot.sendMessage(
                             uid,
