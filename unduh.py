@@ -35,7 +35,7 @@ class Main:
                 size = re.findall('">(.*?) MB</div>', str(i))
                 print(size)
                 if size:
-                    if int(size.split('.')[0]) <= 5:
+                    if int(size[0].split('.')[0]) <= 5:
                         return i.get('href')
         else:
             return None
