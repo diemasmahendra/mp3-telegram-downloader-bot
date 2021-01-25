@@ -43,6 +43,7 @@ class Downloader:
                                 with open(now, "wb") as f:
                                     f.write(a)
                                 tag = eyed3.load(now)
+                                tag.tag.title = judul
                                 tag.tag.artist = "Ismi downloader"
                                 tag.tag.album = "@ismrwtbot"
                                 tag.tag.save()
