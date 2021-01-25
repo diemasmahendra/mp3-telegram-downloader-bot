@@ -32,7 +32,8 @@ class Main:
         )
         for i in a.find_all('a', {'class': 'shadow-xl'}):
             if '128 kbps' in str(i):
-                size = re.findall('">(.*?) MB</div >', i)
+                size = re.findall('">(.*?) MB</div>', str(i))
+                print(size)
                 if size:
                     if int(size.split('.')[0]) <= 5:
                         return i.get('href')
