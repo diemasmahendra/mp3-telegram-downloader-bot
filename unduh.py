@@ -31,6 +31,7 @@ class Main:
             with open(filename, 'wb') as f:
                 response = requests.get(url, stream=True)
                 total = response.headers.get('content-length')
+                print(total)
                 if total is None:
                     return False
                 else:
