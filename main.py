@@ -34,7 +34,7 @@ class Downloader:
                             bot.editMessageReplyMarkup(
                                 ident, reply_markup=None)
                             bot.editMessageText(
-                                msg_identifier=ident, text="Downloading %s" % judul
+                                msg_identifier=ident, text="Downloading *%s*" % judul, parse_mode="Markdown"
                             )
                             now = str(int(time.time())) + ".mp3"
                             url = self._song.get_source(new_msg["data"], now)
@@ -54,7 +54,11 @@ class Downloader:
                                 return
                             else:
                                 bot.sendMessage(
-                                    uid, "Ukuran %s terlalu besar" % judul)
+                                    uid,
+                                    "Durasi *%s* Terlalu panjang. Minimal 5 menit"
+                                    % judul,
+                                    parse_mode="Markdown",
+                                )
             return
         else:
             pesan = new_msg.get("text")
