@@ -27,6 +27,7 @@ class Main:
     def get_source(self, raw_link, filename):
         url = "https://michaelbelgium.me/ytconverter/convert.php?youtubelink=https://www.youtube.com/watch?v="
         url = requests.get(url + raw_link).json().get('file')
+        print('url:', url)
         if url:
             with open(filename, 'wb') as f:
                 response = requests.get(url, stream=True)
