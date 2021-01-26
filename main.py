@@ -36,12 +36,9 @@ class Downloader:
                             bot.editMessageText(
                                 msg_identifier=ident, text="Downloading %s" % judul
                             )
-                            url = self._song.get_source(new_msg["data"])
+                            now = str(int(time.time())) + ".mp3"
+                            url = self._song.get_source(new_msg["data"], now)
                             if url:
-                                a = requests.get(url).content
-                                now = str(int(time.time())) + ".mp3"
-                                with open(now, "wb") as f:
-                                    f.write(a)
                                 tag = eyed3.load(now)
                                 tag.tag.title = judul
                                 tag.tag.artist = "Ismi downloader"

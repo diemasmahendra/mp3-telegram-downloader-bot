@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup as bs
 import requests
+import sys
 import re
-
 
 
 class Main:
@@ -24,18 +24,24 @@ class Main:
         )
         return array
 
-    def get_source(self, raw_link):
-        a = bs(
-            requests.get(
-                "https://www.yt2mp3s.me/api/button/mp3/" + raw_link).content,
-            "html.parser",
-        )
-        for i in a.find_all('a', {'class': 'shadow-xl'}):
-            if '128 kbps' in str(i):
-                size = re.findall('">(.*?) MB</div>', str(i))
-                print(size)
-                if size:
-                    if int(size[0].split('.')[0]) <= 7:
-                        return i.get('href')
+    def get_source(self, raw_link, filename):
+        url = "https://michaelbelgium.me/ytconverter/convert.php?youtubelink=https://www.youtube.com/watch?v="
+        url = requests.get(url + raw_link).json().get('file')
+        if url:
+            with open(filename, 'wb') as f:
+                response = requests.get(url, stream=True)
+                total = response.headers.get('content-length')
+                if total is None:
+                    return False
+                else:
+                    downloaded = 0
+                    total = int(total)
+                    for data in response.iter_content(chunk_size=max(int(total/1000), 1024*1024)):
+                        downloaded += len(data)
+                        f.write(data)
+                        done = int(50*downloaded/total)
+                        sys.stdout.write('\r[{}{}]'.format('█' * done, '.' * (50-done)))
+                        sys.stdout.flush()
+                        return True
         else:
-            return None
+            return False
