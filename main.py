@@ -1,7 +1,6 @@
 from telepot.namedtuple import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
 from flask import Flask, request
 from unduh import Main
-import music_tag
 import eyed3
 import requests
 import telepot
@@ -43,7 +42,6 @@ class Downloader:
                                 now = str(int(time.time())) + ".mp3"
                                 with open(now, "wb") as f:
                                     f.write(a)
-                                audiofile = music_tag.load_file(now)
                                 tag = eyed3.load(now)
                                 tag.tag.title = judul
                                 tag.tag.artist = "Ismi downloader"
