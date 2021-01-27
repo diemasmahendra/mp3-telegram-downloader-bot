@@ -55,7 +55,7 @@ class Downloader:
                             else:
                                 bot.sendMessage(
                                     uid,
-                                    "Durasi *%s* Terlalu panjang. Minimal 5 menit"
+                                    "Ukuran file *%s* Kebesaran. Minimal 7 Mb"
                                     % judul,
                                     parse_mode="Markdown",
                                 )

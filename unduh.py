@@ -45,7 +45,7 @@ class Main:
             size = get_size.headers.get("Content-Length")
             if size:
                 real = convert_bytes(int(size))
-                if 7000000 >= int(size):
+                if 7200000 >= int(size):
                     with open(filename, "wb") as f:
                         response = requests.get(url)
                         f.write(response.content)
