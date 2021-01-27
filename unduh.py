@@ -1,7 +1,18 @@
-from bs4 import BeautifulSoup as bs
 import requests
-import sys
-import re
+
+
+def convert_bytes(bytes_number):
+    tags = ["Byte", "Kilobyte", "Megabyte", "Gigabyte", "Terabyte"]
+
+    i = 0
+    double_bytes = bytes_number
+
+    while i < len(tags) and bytes_number >= 1024:
+        double_bytes = bytes_number / 1024.0
+        i = i + 1
+        bytes_number = bytes_number / 1024
+
+    return str(round(double_bytes, 2)) + " " + tags[i]
 
 
 class Main:
@@ -25,12 +36,23 @@ class Main:
         return array
 
     def get_source(self, raw_link, filename):
-        url = "https://michaelbelgium.me/ytconverter/convert.php?youtubelink=https://www.youtube.com/watch?v="
-        url = requests.get(url + raw_link).json().get('file')
+        # url = "https://michaelbelgium.me/ytconverter/convert.php?youtubelink=https://www.youtube.com/watch?v="
+        new = "https://nuubi.herokuapp.com/api/y2mate/download/mp3?url=https://www.youtube.com/watch?v=%s&quality=128"
+        url = requests.get(new % raw_link).json().get("url")
+
         if url:
-            with open(filename, "wb") as f:
-                response = requests.get(url)
-                f.write(response.content)
-                return True
-        else:
-            return False
+            get_size = requests.get(url, stream=True)
+            size = get_size.headers.get("Content-Length")
+            if size:
+                real = convert_bytes(int(size))
+                if 7000000 >= int(size):
+                    with open(filename, "wb") as f:
+                        response = requests.get(url)
+                        f.write(response.content)
+                        return True
+                else:
+                    return False
+
+
+c = Main()
+c.get_source("6oi5_UyUnds", "asu")
