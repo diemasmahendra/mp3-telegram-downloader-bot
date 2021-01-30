@@ -111,12 +111,11 @@ class Downloader:
             markup = InlineKeyboardMarkup(inline_keyboard=arr)
             for count, cek in enumerate(__MESSAGES_NOW__):
                 if cek["uid"] == uid:
-                    print(cek)
                     bot.editMessageReplyMarkup(
                         telepot.message_identifier(cek["identifier"]),
                         reply_markup=markup,
                     )
-                    __MESSAGES_NOW__.pop(count)
+                    return __MESSAGES_NOW__.pop(count)
             else:
                 text = bot.sendMessage(uid, "Select song", reply_markup=markup)
                 data = {"uid": uid, "identifier": text}
