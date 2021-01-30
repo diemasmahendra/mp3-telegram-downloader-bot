@@ -34,7 +34,9 @@ class Downloader:
                             bot.editMessageReplyMarkup(
                                 ident, reply_markup=None)
                             bot.editMessageText(
-                                msg_identifier=ident, text="Downloading *%s*" % judul, parse_mode="Markdown"
+                                msg_identifier=ident,
+                                text="Downloading *%s*" % judul,
+                                parse_mode="Markdown",
                             )
                             now = str(int(time.time())) + ".mp3"
                             url = self._song.get_source(new_msg["data"], now)
@@ -55,8 +57,7 @@ class Downloader:
                             else:
                                 bot.sendMessage(
                                     uid,
-                                    "Ukuran file *%s* Kebesaran. Minimal 7 Mb"
-                                    % judul,
+                                    "Ukuran file *%s* Kebesaran. Minimal 7 Mb" % judul,
                                     parse_mode="Markdown",
                                 )
             return
@@ -101,15 +102,23 @@ class Downloader:
     def _unduh(self, uid, query):
         arr = []
         results = self._song.get_data(query)
-        for item in results:
-            arr.append(
-                [InlineKeyboardButton(text=item["judul"],
-                                      callback_data=item["id"])]
-            )
-        markup = InlineKeyboardMarkup(inline_keyboard=arr)
-        text = bot.sendMessage(uid, "Select song", reply_markup=markup)
-        data = {"uid": uid, "identifier": text}
-        __MESSAGES_NOW__.append(data)
+        if len(results) != 0:
+            for item in results:
+                arr.append(
+                    [InlineKeyboardButton(
+                        text=item["judul"], callback_data=item["id"])]
+                )
+            markup = InlineKeyboardMarkup(inline_keyboard=arr)
+            for cek in __MESSAGES_NOW__:
+                if cek["uid"] == uid:
+                    bot.editMessageReplyMarkup(
+                        cek["identifier"], reply_markup=markup)
+            else:
+                data = {"uid": uid, "identifier": text}
+                text = bot.sendMessage(uid, "Select song", reply_markup=markup)
+                 __MESSAGES_NOW__.append(data)
+        else:
+            bot.sendMessage(uid, "Query *%s* tidak ditemukan" % query)
         return "ok"
 
 

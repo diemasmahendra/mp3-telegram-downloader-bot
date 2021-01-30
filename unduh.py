@@ -24,15 +24,16 @@ class Main:
         data = requests.get(
             self.__url + "/api/search/%s" % query.replace(" ", "%20"), verify=False
         ).json()
-        array.extend(
-            [
-                {
-                    "judul": item.get("title"),
-                    "id": item.get("id"),
-                }
-                for item in data
-            ]
-        )
+        if len(data) != 0:
+            array.extend(
+                [
+                    {
+                        "judul": item.get("title"),
+                        "id": item.get("id"),
+                    }
+                    for item in data
+                ]
+            )
         return array
 
     def get_source(self, raw_link, filename):
