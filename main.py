@@ -111,15 +111,10 @@ class Downloader:
             markup = InlineKeyboardMarkup(inline_keyboard=arr)
             for count, cek in enumerate(__MESSAGES_NOW__):
                 if cek["uid"] == uid:
-                    bot.editMessageReplyMarkup(
-                        telepot.message_identifier(cek["identifier"]),
-                        reply_markup=markup,
-                    )
-                    return __MESSAGES_NOW__.pop(count)
-            else:
-                text = bot.sendMessage(uid, "Select song", reply_markup=markup)
-                data = {"uid": uid, "identifier": text}
-                __MESSAGES_NOW__.append(data)
+                    bot.deleteMessage(telepot.message_identifier(cek['identifier']))
+            text = bot.sendMessage(uid, "Select song", reply_markup=markup)
+            data = {"uid": uid, "identifier": text}
+            __MESSAGES_NOW__.append(data)
         else:
             bot.sendMessage(
                 uid, "Query *%s* tidak ditemukan" % query, parse_mode="Markdown"
