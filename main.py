@@ -112,13 +112,13 @@ class Downloader:
             for cek in __MESSAGES_NOW__:
                 if cek["uid"] == uid:
                     bot.editMessageReplyMarkup(
-                        cek["identifier"], reply_markup=markup)
+                        telepot.message_identifier(cek['identifier']), reply_markup=markup)
             else:
                 text = bot.sendMessage(uid, "Select song", reply_markup=markup)
                 data = {"uid": uid, "identifier": text}
                 __MESSAGES_NOW__.append(data)
         else:
-            bot.sendMessage(uid, "Query *%s* tidak ditemukan" % query)
+            bot.sendMessage(uid, "Query *%s* tidak ditemukan" % query, parse_mode="Markdown")
         return "ok"
 
 
