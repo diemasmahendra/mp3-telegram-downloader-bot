@@ -109,16 +109,22 @@ class Downloader:
                         text=item["judul"], callback_data=item["id"])]
                 )
             markup = InlineKeyboardMarkup(inline_keyboard=arr)
-            for cek in __MESSAGES_NOW__:
+            for count, cek in enumerate(__MESSAGES_NOW__):
                 if cek["uid"] == uid:
+                    print(cek)
                     bot.editMessageReplyMarkup(
-                        telepot.message_identifier(cek['identifier']), reply_markup=markup)
+                        telepot.message_identifier(cek["identifier"]),
+                        reply_markup=markup,
+                    )
+                    __MESSAGES_NOW__.pop(count)
             else:
                 text = bot.sendMessage(uid, "Select song", reply_markup=markup)
                 data = {"uid": uid, "identifier": text}
                 __MESSAGES_NOW__.append(data)
         else:
-            bot.sendMessage(uid, "Query *%s* tidak ditemukan" % query, parse_mode="Markdown")
+            bot.sendMessage(
+                uid, "Query *%s* tidak ditemukan" % query, parse_mode="Markdown"
+            )
         return "ok"
 
 
@@ -130,7 +136,6 @@ def index():
     if request.method == "POST":
         new_msg = request.get_json()
         if "message" in str(new_msg):
-            print(new_msg)
             if new_msg.get("message"):
                 mp._received_msg(new_msg["message"])
             else:
