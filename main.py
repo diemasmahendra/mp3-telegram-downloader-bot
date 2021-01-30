@@ -112,6 +112,7 @@ class Downloader:
             for count, cek in enumerate(__MESSAGES_NOW__):
                 if cek["uid"] == uid:
                     bot.deleteMessage(telepot.message_identifier(cek['identifier']))
+                    __MESSAGES_NOW__.pop(count)
             text = bot.sendMessage(uid, "Select song", reply_markup=markup)
             data = {"uid": uid, "identifier": text}
             __MESSAGES_NOW__.append(data)
