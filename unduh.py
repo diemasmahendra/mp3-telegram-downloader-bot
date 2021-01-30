@@ -22,7 +22,8 @@ class Main:
     def get_data(self, query):
         array = []
         data = requests.get(
-            self.__url + "/api/search/%s" % query.replace(" ", "%20")).json()
+            self.__url + "/api/search/%s" % query.replace(" ", "%20"), verify=False
+        ).json()
         if len(data) != 0:
             array.extend(
                 [
