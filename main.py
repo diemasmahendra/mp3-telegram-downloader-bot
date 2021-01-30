@@ -115,7 +115,7 @@ class Downloader:
                         cek["identifier"], reply_markup=markup)
             else:
                 text = bot.sendMessage(uid, "Select song", reply_markup=markup)
-                data = {"uid": uid, "identifier": text)
+                data = {"uid": uid, "identifier": text}
                 __MESSAGES_NOW__.append(data)
         else:
             bot.sendMessage(uid, "Query *%s* tidak ditemukan" % query)
