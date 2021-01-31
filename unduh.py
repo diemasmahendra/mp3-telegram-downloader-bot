@@ -36,7 +36,7 @@ class Main:
                     with open(filename, "wb") as f:
                         response = requests.get(url.get('url'))
                         f.write(response.content)
-                    with open("thumb-" + filename, "rb") as f:
+                    with open("thumb-" + filename, "wb") as f:
                         f.write(requests.get(url.get("thumbnail")).content)
                     audio = eyed3.load(now)
                     audio.tag.title = url.get("judul")
