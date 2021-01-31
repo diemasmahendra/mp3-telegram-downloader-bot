@@ -34,7 +34,7 @@ class Main:
             if size:
                 if 7200000 >= int(size):
                     with open(filename, "wb") as f:
-                        response = requests.get(url)
+                        response = requests.get(url.get('url'))
                         f.write(response.content)
                     with open("thumb-" + filename, "rb") as f:
                         f.write(requests.get(url.get("thumbnail")).content)
