@@ -36,14 +36,14 @@ class Main:
                     with open(filename, "wb") as f:
                         response = requests.get(url.get("url"))
                         f.write(response.content)
-                    with open("thumb-" + filename, "wb") as f:
+                    with open("thumb-" + filename.split('.')[0] + '.jpg', "wb") as f:
                         f.write(requests.get(url.get("thumbnail")).content)
-                    audio = eyed3.load(filename)
+                    audio = eyed3.load(filename.split('.')[0] + '.jpg')
                     audio.tag.title = url.get("judul")
                     audio.tag.artist = "Ismrwtbot"
                     audio.tag.album = "Ismi Downloader"
                     audio.tag.images.set(
-                        3, open("thumb-" + filename).read(), "images/jpeg"
+                        3, open("thumb-" + filename.split('.')[0] + '.jpg').read(), "image/jpeg"
                     )
                     audio.tag.save()
                     return True
@@ -51,5 +51,5 @@ class Main:
                     return False
 
 
-c = Main()
-c.get_source("6oi5_UyUnds", "asu")
+# c = Main()
+# c.get_source("6oi5_UyUnds", "asu.mp3")
