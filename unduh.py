@@ -34,16 +34,17 @@ class Main:
             if size:
                 if 7200000 >= int(size):
                     with open(filename, "wb") as f:
-                        response = requests.get(url.get('url'))
+                        response = requests.get(url.get("url"))
                         f.write(response.content)
                     with open("thumb-" + filename, "wb") as f:
                         f.write(requests.get(url.get("thumbnail")).content)
-                    audio = eyed3.load(now)
+                    audio = eyed3.load(filename)
                     audio.tag.title = url.get("judul")
                     audio.tag.artist = "Ismrwtbot"
                     audio.tag.album = "Ismi Downloader"
                     audio.tag.images.set(
-                        3, open("thumb-" + now).read(), "images/jpeg")
+                        3, open("thumb-" + filename).read(), "images/jpeg"
+                    )
                     audio.tag.save()
                     return True
                 else:
