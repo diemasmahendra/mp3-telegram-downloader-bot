@@ -35,11 +35,11 @@ class Downloader:
                                 ident, reply_markup=None)
                             down = bot.editMessageText(
                                 msg_identifier=ident,
-                                __AFTER_DOWNLOAD__.append(
-                                    dict(uid=uid, identifier=down))
                                 text="Downloading *%s*" % judul,
                                 parse_mode="Markdown",
                             )
+                            __AFTER_DOWNLOAD__.append(
+                                dict(uid=uid, identifier=down))
                             now = str(int(time.time())) + ".mp3"
                             url = self._song.get_source(new_msg["data"], now)
                             for count, user in enumerate(__AFTER_DOWNLOAD__):
