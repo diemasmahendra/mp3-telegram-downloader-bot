@@ -2,7 +2,6 @@ from telepot.namedtuple import InlineKeyboardButton, InlineKeyboardMarkup, Force
 from flask import Flask, request
 from unduh import Main
 import eyed3
-import requests
 import telepot
 import time
 import os
@@ -12,6 +11,7 @@ app = Flask(__name__)
 bot = telepot.Bot("1468139592:AAFoNdHFTpOWWeYQAyT4yAWbQ3Y6mPb-j_0")
 
 __MESSAGES_NOW__ = []
+__AFTER_DOWNLOAD__ = []
 
 
 class Downloader:
@@ -33,26 +33,23 @@ class Downloader:
                             ident = telepot.message_identifier(delete)
                             bot.editMessageReplyMarkup(
                                 ident, reply_markup=None)
-                            bot.editMessageText(
+                            down = bot.editMessageText(
                                 msg_identifier=ident,
+                                __AFTER_DOWNLOAD__.append(
+                                    dict(uid=uid, identifier=down))
                                 text="Downloading *%s*" % judul,
                                 parse_mode="Markdown",
                             )
                             now = str(int(time.time())) + ".mp3"
                             url = self._song.get_source(new_msg["data"], now)
+                            for count, user in enumerate(__AFTER_DOWNLOAD__):
+                                if uid == user['uid']:
+                                    bot.deleteMessage(
+                                        telepot.message_identifier(user['identifier']))
+                                    __MESSAGES_NOW__.pop(count)
                             if url:
-                                tag = eyed3.load(now)
-                                tag.tag.title = judul
-                                tag.tag.artist = "Ismi downloader"
-                                tag.tag.album = "@ismrwtbot"
-                                tag.tag.images.set(
-                                    3, open(
-                                        "logo.jpg", "rb").read(), "image/jpeg"
-                                )
-                                tag.tag.save()
                                 bot.sendAudio(
                                     uid, open(now, "rb"), title=judul)
-                                os.system("rm " + now)
                                 return
                             else:
                                 bot.sendMessage(
@@ -111,7 +108,8 @@ class Downloader:
             markup = InlineKeyboardMarkup(inline_keyboard=arr)
             for count, cek in enumerate(__MESSAGES_NOW__):
                 if cek["uid"] == uid:
-                    bot.deleteMessage(telepot.message_identifier(cek['identifier']))
+                    bot.deleteMessage(
+                        telepot.message_identifier(cek["identifier"]))
                     __MESSAGES_NOW__.pop(count)
             text = bot.sendMessage(uid, "Select song", reply_markup=markup)
             data = {"uid": uid, "identifier": text}

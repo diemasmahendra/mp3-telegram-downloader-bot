@@ -1,18 +1,5 @@
 import requests
-
-
-def convert_bytes(bytes_number):
-    tags = ["Byte", "Kilobyte", "Megabyte", "Gigabyte", "Terabyte"]
-
-    i = 0
-    double_bytes = bytes_number
-
-    while i < len(tags) and bytes_number >= 1024:
-        double_bytes = bytes_number / 1024.0
-        i = i + 1
-        bytes_number = bytes_number / 1024
-
-    return str(round(double_bytes, 2)) + " " + tags[i]
+import eyed3
 
 
 class Main:
@@ -39,18 +26,26 @@ class Main:
     def get_source(self, raw_link, filename):
         # url = "https://michaelbelgium.me/ytconverter/convert.php?youtubelink=https://www.youtube.com/watch?v="
         new = "https://nuubi.herokuapp.com/api/y2mate/download/mp3?url=https://www.youtube.com/watch?v=%s&quality=128"
-        url = requests.get(new % raw_link).json().get("url")
+        url = requests.get(new % raw_link).json()
 
-        if url:
-            get_size = requests.get(url, stream=True)
+        if url.get("url"):
+            get_size = requests.get(url.get("url"), stream=True)
             size = get_size.headers.get("Content-Length")
             if size:
-                real = convert_bytes(int(size))
                 if 7200000 >= int(size):
                     with open(filename, "wb") as f:
                         response = requests.get(url)
                         f.write(response.content)
-                        return True
+                    with open("thumb-" + filename, "rb") as f:
+                        f.write(requests.get(url.get("thumbnail")).content)
+                    audio = eyed3.load(now)
+                    audio.tag.title = url.get("judul")
+                    audio.tag.artist = "Ismrwtbot"
+                    audio.tag.album = "Ismi Downloader"
+                    audio.tag.images.set(
+                        3, open("thumb-" + now).read(), "images/jpeg")
+                    audio.tag.save()
+                    return True
                 else:
                     return False
 
