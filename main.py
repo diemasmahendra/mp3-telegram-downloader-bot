@@ -151,7 +151,7 @@ def index():
                 mp._received_msg(new_msg["message"])
             else:
                 if new_msg.get("callback_query"):
-                    mp._received_msg(new_msg["callback_query"])
+                    mp._received_msg(new_msg["callback_query"]["message"])
         return "ok"
     else:
         return "Ok"
