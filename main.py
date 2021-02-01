@@ -20,7 +20,6 @@ class Downloader:
         self._song = Main()
 
     def _received_msg(self, new_msg):
-        print(new_msg)
         uid = new_msg["message"]["chat"]["id"]
         if "reply_markup" in str(new_msg):
             for count, msg in enumerate(__MESSAGES_NOW__):
@@ -61,8 +60,13 @@ class Downloader:
                                 )
             return
         else:
-            pesan = new_msg.get("message").get('text')
+            pesan = new_msg.get("message").get("text")
             if pesan:
+                for count, msg in enumerate(__MESSAGES_NOW__):
+                    if msg["uid"] == uid:
+                        # Delete element if user reply
+                        __MESSAGES_NOW__.pop(count)
+                        delete = msg["identifier"]
                 if len(self.__position) != 0 and str(uid) in str(self.__position):
                     [
                         self.__position.pop(count)
@@ -90,14 +94,16 @@ class Downloader:
                         if len(url) == 1:
                             bot.sendMessage(
                                 uid,
-                                "Penggunaan /yt [youtube link]\nContoh: /yt https://youtu.be/y6e_kztXG04",disable_web_page_preview=True,
+                                "Penggunaan /yt [youtube link]\nContoh: /yt https://youtu.be/y6e_kztXG04",
+                                disable_web_page_preview=True,
                             )
                         else:
                             judul = str(int(time.time())) + ".mp3"
-                            lagu = self._song.get_source(url[1], judul, ytlink=True)
+                            lagu = self._song.get_source(
+                                url[1], judul, ytlink=True)
                             if lagu["success"]:
                                 bot.sendAudio(
-                                    uid, open(judul, 'rb'), title=lagu.get("judul")
+                                    uid, open(judul, "rb"), title=lagu.get("judul")
                                 )
                             else:
                                 bot.sendMessage(uid, lagu.get("msg"))
