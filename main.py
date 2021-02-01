@@ -7,7 +7,7 @@ import os
 
 app = Flask(__name__)
 
-bot = telepot.Bot("Your Bot token here")
+bot = telepot.Bot("1468139592:AAFoNdHFTpOWWeYQAyT4yAWbQ3Y6mPb-j_0")
 
 __MESSAGES_NOW__ = []
 __AFTER_DOWNLOAD__ = []
@@ -20,6 +20,7 @@ class Downloader:
         self._song = Main()
 
     def _received_msg(self, new_msg):
+        print(new_msg)
         uid = new_msg["from"]["id"]
         if "reply_markup" in str(new_msg):
             for count, msg in enumerate(__MESSAGES_NOW__):
