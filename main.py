@@ -61,7 +61,7 @@ class Downloader:
                                 )
             return
         else:
-            pesan = new_msg.get("text")
+            pesan = new_msg.get("message").get('text')
             if pesan:
                 if len(self.__position) != 0 and str(uid) in str(self.__position):
                     [
