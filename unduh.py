@@ -36,12 +36,13 @@ class Main:
         if url.get("url"):
             get_size = requests.get(url.get("url"), stream=True)
             size = get_size.headers.get("Content-Length")
+            thumb = filename.split(".")[0] + ".jpg"
             if size:
                 if 7200000 >= int(size):
                     with open(filename, "wb") as f:
                         response = requests.get(url.get("url"))
                         f.write(response.content)
-                    with open("thumb-" + filename.split(".")[0] + ".jpg", "wb") as f:
+                    with open(thumb, "wb") as f:
                         f.write(requests.get(url.get("thumbnail")).content)
                     audio = eyed3.load(filename)
                     audio.tag.title = url.get("judul")
@@ -49,14 +50,18 @@ class Main:
                     audio.tag.album = "Ismi Downloader"
                     audio.tag.images.set(
                         3,
-                        open("thumb-" + filename.split(".")
-                             [0] + ".jpg").read(),
+                        open(thumb, 'rb').read(),
                         "image/jpeg",
                     )
                     audio.tag.save()
                     return dict(success=True, judul=url.get("judul"))
                 else:
-                    return dict(success=False, judul=None, msg="Ukuran %s Kebesaran. Minimal 7 Mb" % url.get('judul'))
+                    return dict(
+                        success=False,
+                        judul=None,
+                        msg="Ukuran %s Kebesaran. Minimal 7 Mb" % url.get(
+                            "judul"),
+                    )
         else:
             return dict(success=False, judul=None, msg=url.get("error"))
 
