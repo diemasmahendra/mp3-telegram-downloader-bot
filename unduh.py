@@ -45,7 +45,7 @@ class Main:
                     with open(thumb, "wb") as f:
                         f.write(requests.get(url.get("thumbnail")).content)
                     audio = eyed3.load(filename)
-                    audio.tag.title = url.get("judul")
+                    audio.tag.title = url.get("judul").replace('.mp3', '')
                     audio.tag.artist = "Ismrwtbot"
                     audio.tag.album = "Ismi Downloader"
                     audio.tag.images.set(
