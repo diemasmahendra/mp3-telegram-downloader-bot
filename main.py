@@ -1,7 +1,6 @@
 from telepot.namedtuple import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
 from flask import Flask, request
 from unduh import Main
-import eyed3
 import telepot
 import time
 import os
@@ -43,11 +42,13 @@ class Downloader:
                             now = str(int(time.time())) + ".mp3"
                             url = self._song.get_source(new_msg["data"], now)
                             for count, user in enumerate(__AFTER_DOWNLOAD__):
-                                if uid == user['uid']:
+                                if uid == user["uid"]:
                                     bot.deleteMessage(
-                                        telepot.message_identifier(user['identifier']))
+                                        telepot.message_identifier(
+                                            user["identifier"])
+                                    )
                                     __MESSAGES_NOW__.pop(count)
-                            if url:
+                            if url["success"]:
                                 bot.sendAudio(
                                     uid, open(now, "rb"), title=judul)
                                 return
@@ -72,17 +73,34 @@ class Downloader:
 
                     if pesan.startswith("/dl"):
                         query = pesan.split(" ", maxsplit=1)
-                        if len(query) != 2:
+                        if len(query) == 1:
                             markup = ForceReply(selective=False)
                             bot.sendMessage(
                                 uid,
-                                "Ok, berikan saya judul lagu yang mau dicari",
+                                "Ok, berikan saya query lagu yang mau dicari",
                                 reply_markup=markup,
                             )
                             self.__position.append(
                                 dict(uid=uid, position="waitmsg"))
                         else:
                             self._unduh(uid, query[1])
+                    elif pesan.startswith("/yt"):
+                        url = pesan.split(" ", maxsplit=1)
+                        if len(url) == 1:
+                            bot.sendMessage(
+                                uid,
+                                "Penggunaan /yt [youtube link]\nContoh: /yt https://youtu.be/y6e_kztXG04",
+                            )
+                        else:
+                            judul = str(int(time.time())) + ".mp3"
+                            lagu = self._song.get_source(
+                                uid, judul, ytlink=True)
+                            if lagu["success"]:
+                                bot.sendAudio(
+                                    uid, open(judul).read(), title=lagu.get("judul")
+                                )
+                            else:
+                                bot.sendMessage(uid, lagu.get("msg"))
                     elif pesan.startswith("/start"):
                         bot.sendMessage(
                             uid, "Penggunaan /dl [query] \nContoh: /dl Noah"

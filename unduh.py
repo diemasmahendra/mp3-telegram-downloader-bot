@@ -23,9 +23,14 @@ class Main:
             )
         return array
 
-    def get_source(self, raw_link, filename):
+    def get_source(self, raw_link, filename, ytlink=False):
         # url = "https://michaelbelgium.me/ytconverter/convert.php?youtubelink=https://www.youtube.com/watch?v="
-        new = "https://nuubi.herokuapp.com/api/y2mate/download/mp3?url=https://www.youtube.com/watch?v=%s&quality=128"
+        if ytlink:
+            new = (
+                "https://nuubi.herokuapp.com/api/y2mate/download/mp3?url=%s&quality=128"
+            )
+        else:
+            new = "https://nuubi.herokuapp.com/api/y2mate/download/mp3?url=https://www.youtube.com/watch?v=%s&quality=128"
         url = requests.get(new % raw_link).json()
 
         if url.get("url"):
@@ -36,19 +41,24 @@ class Main:
                     with open(filename, "wb") as f:
                         response = requests.get(url.get("url"))
                         f.write(response.content)
-                    with open("thumb-" + filename.split('.')[0] + '.jpg', "wb") as f:
+                    with open("thumb-" + filename.split(".")[0] + ".jpg", "wb") as f:
                         f.write(requests.get(url.get("thumbnail")).content)
-                    audio = eyed3.load(filename.split('.')[0] + '.jpg')
+                    audio = eyed3.load(filename.split(".")[0] + ".jpg")
                     audio.tag.title = url.get("judul")
                     audio.tag.artist = "Ismrwtbot"
                     audio.tag.album = "Ismi Downloader"
                     audio.tag.images.set(
-                        3, open("thumb-" + filename.split('.')[0] + '.jpg').read(), "image/jpeg"
+                        3,
+                        open("thumb-" + filename.split(".")
+                             [0] + ".jpg").read(),
+                        "image/jpeg",
                     )
                     audio.tag.save()
-                    return True
+                    return dict(success=True, judul=url.get("judul"))
                 else:
-                    return False
+                    return dict(success=False, judul=None, msg="Ukuran %s Kebesaran. Minimal 7 Mb" % url.get('judul'))
+        else:
+            return dict(success=False, judul=None, msg=url.get("error"))
 
 
 # c = Main()
