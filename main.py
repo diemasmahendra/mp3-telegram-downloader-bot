@@ -27,7 +27,7 @@ class Downloader:
                 if msg["uid"] == uid:
                     __MESSAGES_NOW__.pop(count)  # Delete element if user reply
                     delete = msg["identifier"]
-                    for item in new_msg["message"]["reply_markup"]["inline_keyboard"]:
+                    for item in new_msg["reply_markup"]["inline_keyboard"]:
                         if item[0]["callback_data"] == new_msg["data"]:
                             judul = item[0]["text"]
                             ident = telepot.message_identifier(delete)
