@@ -21,13 +21,13 @@ class Downloader:
 
     def _received_msg(self, new_msg):
         print(new_msg)
-        uid = new_msg["chat"]["id"]
+        uid = new_msg["message"]["chat"]["id"]
         if "reply_markup" in str(new_msg):
             for count, msg in enumerate(__MESSAGES_NOW__):
                 if msg["uid"] == uid:
                     __MESSAGES_NOW__.pop(count)  # Delete element if user reply
                     delete = msg["identifier"]
-                    for item in new_msg["reply_markup"]["inline_keyboard"]:
+                    for item in new_msg["message"]["reply_markup"]["inline_keyboard"]:
                         if item[0]["callback_data"] == new_msg["data"]:
                             judul = item[0]["text"]
                             ident = telepot.message_identifier(delete)
@@ -148,10 +148,10 @@ def index():
         new_msg = request.get_json()
         if "message" in str(new_msg):
             if new_msg.get("message"):
-                mp._received_msg(new_msg["message"])
+                mp._received_msg(new_msg)
             else:
                 if new_msg.get("callback_query"):
-                    mp._received_msg(new_msg["callback_query"]["message"])
+                    mp._received_msg(new_msg["callback_query"])
         return "ok"
     else:
         return "Ok"
