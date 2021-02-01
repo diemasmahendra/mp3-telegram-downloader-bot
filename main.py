@@ -96,7 +96,7 @@ class Downloader:
                             lagu = self._song.get_source(url[1], judul, ytlink=True)
                             if lagu["success"]:
                                 bot.sendAudio(
-                                    uid, open(judul, 'rb').read(), title=lagu.get("judul")
+                                    uid, open(judul, 'rb'), title=lagu.get("judul")
                                 )
                             else:
                                 bot.sendMessage(uid, lagu.get("msg"))
