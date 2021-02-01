@@ -67,6 +67,9 @@ class Downloader:
                         # Delete element if user reply
                         __MESSAGES_NOW__.pop(count)
                         delete = msg["identifier"]
+                        ident = telepot.message_identifier(delete)
+                        bot.editMessageReplyMarkup(
+                                ident, reply_markup=None)
                 if len(self.__position) != 0 and str(uid) in str(self.__position):
                     [
                         self.__position.pop(count)
