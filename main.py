@@ -21,7 +21,7 @@ class Downloader:
 
     def _received_msg(self, new_msg):
         print(new_msg)
-        uid = new_msg["from"]["id"]
+        uid = new_msg["message"]["chat"]["id"]
         if "reply_markup" in str(new_msg):
             for count, msg in enumerate(__MESSAGES_NOW__):
                 if msg["uid"] == uid:
