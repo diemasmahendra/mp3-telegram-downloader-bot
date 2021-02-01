@@ -47,7 +47,7 @@ class Downloader:
                                         telepot.message_identifier(
                                             user["identifier"])
                                     )
-                                    __MESSAGES_NOW__.pop(count)
+                                    __AFTER_DOWNLOAD__.pop(count)
                             if url["success"]:
                                 bot.sendAudio(
                                     uid, open(now, "rb"), title=judul)
