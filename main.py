@@ -89,12 +89,11 @@ class Downloader:
                         if len(url) == 1:
                             bot.sendMessage(
                                 uid,
-                                "Penggunaan /yt [youtube link]\nContoh: /yt https://youtu.be/y6e_kztXG04",
+                                "Penggunaan /yt [youtube link]\nContoh: /yt https://youtu.be/y6e_kztXG04",disable_web_page_preview=True,
                             )
                         else:
                             judul = str(int(time.time())) + ".mp3"
-                            lagu = self._song.get_source(
-                                uid, judul, ytlink=True)
+                            lagu = self._song.get_source(url[1], judul, ytlink=True)
                             if lagu["success"]:
                                 bot.sendAudio(
                                     uid, open(judul).read(), title=lagu.get("judul")
