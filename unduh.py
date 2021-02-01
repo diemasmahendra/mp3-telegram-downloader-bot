@@ -43,7 +43,7 @@ class Main:
                         f.write(response.content)
                     with open("thumb-" + filename.split(".")[0] + ".jpg", "wb") as f:
                         f.write(requests.get(url.get("thumbnail")).content)
-                    audio = eyed3.load(filename.split(".")[0] + ".jpg")
+                    audio = eyed3.load(filename)
                     audio.tag.title = url.get("judul")
                     audio.tag.artist = "Ismrwtbot"
                     audio.tag.album = "Ismi Downloader"
