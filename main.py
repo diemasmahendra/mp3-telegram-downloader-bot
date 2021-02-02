@@ -68,9 +68,9 @@ class Downloader:
                 for index, element in enumerate(self.__position):
                     if uid == element["uid"]:
                         if element["position"] == "dl":
-                            self.__position.pop(index=index)
+                            self.__position.pop(index)
                         if element["position"] == "yt":
-                            self.__position.pop(index=index)
+                            self.__position.pop(index)
                             return self.download(uid, pesan, ytlink=True)
                 self._select_song(uid, pesan)
             else:
