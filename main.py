@@ -59,6 +59,52 @@ class Downloader:
         if pesan:
             for count, msg in enumerate(MESSAGES_NOW):
                 print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                print('asuuuuuuuuuuuuuuuuuuu')
+                if msg["uid"] == uid:
+                    # Delete element if user reply
+                    MESSAGES_NOW.pop(count)
+                    delete = msg["identifier"]
+                    ident = telepot.message_identifier(delete)
+                    bot.deleteMessage(ident)
+            if str(uid) in str(self.__position):
+                if msg["uid"] == uid:
+                    # Delete element if user reply
+                    MESSAGES_NOW.pop(count)
+                    delete = msg["identifier"]
+                    ident = telepot.message_identifier(delete)
+                    bot.deleteMessage(ident)
+            if str(uid) in str(self.__position):
+                for index, element in enumerate(self.__position):
                 if msg["uid"] == uid:
                     # Delete element if user reply
                     MESSAGES_NOW.pop(count)
