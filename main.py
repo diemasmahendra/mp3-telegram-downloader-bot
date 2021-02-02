@@ -58,12 +58,13 @@ class Downloader:
         pesan = new_msg["message"].get("text")
         if pesan:
             for count, msg in enumerate(MESSAGES_NOW):
+                print(msg)
                 if msg["uid"] == uid:
                     # Delete element if user reply
                     MESSAGES_NOW.pop(count)
                     delete = msg["identifier"]
                     ident = telepot.message_identifier(delete)
-                    bot.editMessageReplyMarkup(ident, reply_markup=None)
+                    print(bot.editMessageReplyMarkup(ident, reply_markup=None))
             if str(uid) in str(self.__position):
                 for index, element in enumerate(self.__position):
                     if uid == element["uid"]:
