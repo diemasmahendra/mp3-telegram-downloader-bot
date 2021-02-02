@@ -54,26 +54,10 @@ class Downloader:
         return
 
     def _received_msg(self, new_msg):
-        print(new_msg)
         uid = new_msg["message"]["chat"]["id"]
         pesan = new_msg["message"].get("text")
         if pesan:
             for count, msg in enumerate(MESSAGES_NOW):
-                print('asuuuuuuuuuuuuuuuuuuu')
-                print('asuuuuuuuuuuuuuuuuuuu')
-                print('asuuuuuuuuuuuuuuuuuuu')
-                print('asuuuuuuuuuuuuuuuuuuu')
-                print('asuuuuuuuuuuuuuuuuuuu')
-                print('asuuuuuuuuuuuuuuuuuuu')
-                print('asuuuuuuuuuuuuuuuuuuu')
-                print('asuuuuuuuuuuuuuuuuuuu')
-                print('asuuuuuuuuuuuuuuuuuuu')
-                print('asuuuuuuuuuuuuuuuuuuu')
-                print('asuuuuuuuuuuuuuuuuuuu')
-                print('asuuuuuuuuuuuuuuuuuuu')
-                print('asuuuuuuuuuuuuuuuuuuu')
-                print('asuuuuuuuuuuuuuuuuuuu')
-                print('asuuuuuuuuuuuuuuuuuuu')
                 if msg["uid"] == uid:
                     # Delete element if user reply
                     MESSAGES_NOW.pop(count)
