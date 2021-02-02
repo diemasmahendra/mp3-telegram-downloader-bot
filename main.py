@@ -9,8 +9,8 @@ app = Flask(__name__)
 
 bot = telepot.Bot("1468139592:AAFoNdHFTpOWWeYQAyT4yAWbQ3Y6mPb-j_0")
 
-__MESSAGES_NOW__ = []
-__AFTER_DOWNLOAD__ = []
+MESSAGES_NOW = []
+AFTER_DOWNLOAD = []
 
 
 class Downloader:
@@ -19,111 +19,101 @@ class Downloader:
         self._bot = None
         self._song = Main()
 
+    def download(self, uid, query, ytlink=False, delete=None):
+        judul = str(int(time.time())) + ".mp3"
+        stts = self._song.get_source(query, judul, ytlink=ytlink)
+        if delete:
+            for index, item in enumerate(delete):
+                if uid == item["uid"]:
+                    del_msg = telepot.message_identifier(item["identifier"])
+                    bot.deleteMessage(del_msg)
+                    delete.pop(index)
+        if stts["success"]:
+            bot.sendAudio(uid, open(judul, "rb"), title=stts.get("judul"))
+        else:
+            bot.sendMessage(uid, stts.get("msg"), parse_mode="Markdown")
+
+    def inline_markup(self, new_msg):
+        uid = new_msg["message"]["chat"]["id"]
+        for count, msg in enumerate(MESSAGES_NOW):
+            if msg["uid"] == uid:
+                MESSAGES_NOW.pop(count)  # Delete element if user reply
+                delete = msg["identifier"]
+                data = new_msg["message"]["reply_markup"]["inline_keyboard"]
+                for item in data:
+                    if item[0]["callback_data"] == new_msg["data"]:
+                        judul = item[0]["text"]
+                        ident = telepot.message_identifier(delete)
+                        bot.editMessageReplyMarkup(ident, reply_markup=None)
+                        pesan = "Downloading *%s*" % judul
+                        down = bot.editMessageText(
+                            ident, pesan, parse_mode="Markdown")
+                        AFTER_DOWNLOAD.append(dict(uid=uid, identifier=down))
+                        self.download(
+                            uid, new_msg["data"], delete=AFTER_DOWNLOAD)
+        return
+
     def _received_msg(self, new_msg):
         uid = new_msg["message"]["chat"]["id"]
-        if "reply_markup" in str(new_msg):
-            for count, msg in enumerate(__MESSAGES_NOW__):
+        pesan = new_msg["message"].get("text")
+        if pesan:
+            for count, msg in enumerate(MESSAGES_NOW):
                 if msg["uid"] == uid:
-                    __MESSAGES_NOW__.pop(count)  # Delete element if user reply
+                    # Delete element if user reply
+                    MESSAGES_NOW.pop(count)
                     delete = msg["identifier"]
-                    for item in new_msg["message"]["reply_markup"]["inline_keyboard"]:
-                        if item[0]["callback_data"] == new_msg["data"]:
-                            judul = item[0]["text"]
-                            ident = telepot.message_identifier(delete)
-                            bot.editMessageReplyMarkup(
-                                ident, reply_markup=None)
-                            down = bot.editMessageText(
-                                msg_identifier=ident,
-                                text="Downloading *%s*" % judul,
-                                parse_mode="Markdown",
-                            )
-                            __AFTER_DOWNLOAD__.append(
-                                dict(uid=uid, identifier=down))
-                            now = str(int(time.time())) + ".mp3"
-                            url = self._song.get_source(new_msg["data"], now)
-                            for count, user in enumerate(__AFTER_DOWNLOAD__):
-                                if uid == user["uid"]:
-                                    bot.deleteMessage(
-                                        telepot.message_identifier(
-                                            user["identifier"])
-                                    )
-                                    __AFTER_DOWNLOAD__.pop(count)
-                            if url["success"]:
-                                bot.sendAudio(
-                                    uid, open(now, "rb"), title=judul)
-                                return
-                            else:
-                                bot.sendMessage(
-                                    uid,
-                                    "Ukuran file *%s* Kebesaran. Minimal 7 Mb" % judul,
-                                    parse_mode="Markdown",
-                                )
-            return
-        else:
-            pesan = new_msg.get("message").get("text")
-            if pesan:
-                for count, msg in enumerate(__MESSAGES_NOW__):
-                    if msg["uid"] == uid:
-                        # Delete element if user reply
-                        __MESSAGES_NOW__.pop(count)
-                        delete = msg["identifier"]
-                        ident = telepot.message_identifier(delete)
-                        bot.editMessageReplyMarkup(
-                                ident, reply_markup=None)
-                if len(self.__position) != 0 and str(uid) in str(self.__position):
-                    [
-                        self.__position.pop(count)
-                        for count, item in enumerate(self.__position)
-                        if item["uid"] == uid
-                    ]  # Delete element if user reply
-                    self._unduh(uid, pesan)
-                else:
-
-                    if pesan.startswith("/dl"):
-                        query = pesan.split(" ", maxsplit=1)
-                        if len(query) == 1:
-                            markup = ForceReply(selective=False)
-                            bot.sendMessage(
-                                uid,
-                                "Ok, berikan saya query lagu yang mau dicari",
-                                reply_markup=markup,
-                            )
-                            self.__position.append(
-                                dict(uid=uid, position="waitmsg"))
-                        else:
-                            self._unduh(uid, query[1])
-                    elif pesan.startswith("/yt"):
-                        url = pesan.split(" ", maxsplit=1)
-                        if len(url) == 1:
-                            bot.sendMessage(
-                                uid,
-                                "Penggunaan /yt [youtube link]\nContoh: /yt https://youtu.be/y6e_kztXG04",
-                                disable_web_page_preview=True,
-                            )
-                        else:
-                            judul = str(int(time.time())) + ".mp3"
-                            lagu = self._song.get_source(
-                                url[1], judul, ytlink=True)
-                            if lagu["success"]:
-                                bot.sendAudio(
-                                    uid, open(judul, "rb"), title=lagu.get("judul")
-                                )
-                            else:
-                                bot.sendMessage(uid, lagu.get("msg"))
-                    elif pesan.startswith("/start"):
-                        bot.sendMessage(
-                            uid, "Penggunaan /dl [query] \nContoh: /dl Noah"
-                        )
-                    else:
-                        bot.sendMessage(
-                            uid,
-                            "Pesan tidak dikenali\nPenggunaan /dl [query] \nContoh: /dl Noah",
-                        )
+                    ident = telepot.message_identifier(delete)
+                    bot.editMessageReplyMarkup(ident, reply_markup=None)
+            if str(uid) in str(self.__position):
+                for index, element in enumerate(self.__position):
+                    if uid == element["uid"]:
+                        if element["position"] == "dl":
+                            self.__position.pop(index=index)
+                        if element["position"] == "yt":
+                            self.__position.pop(index=index)
+                            return self.download(uid, pesan, ytlink=True)
+                self._select_song(uid, pesan)
             else:
-                bot.sendMessage(
-                    uid, "Bot hanya mengenali pesan yang berupa text ")
 
-    def _unduh(self, uid, query):
+                if pesan.startswith("/dl"):
+                    query = pesan.split(" ", maxsplit=1)
+                    if len(query) == 1:
+                        markup = ForceReply(selective=False)
+                        pesan = "Ok, berikan saya query lagu yang mau dicari"
+                        bot.sendMessage(uid, reply_markup=markup)
+                        self.__position.append(dict(uid=uid, position="dl"))
+                    else:
+                        self._select_song(uid, query[1])
+                elif pesan.startswith("/yt"):
+                    url = pesan.split(" ", maxsplit=1)
+                    if len(url) == 1:
+                        markup = ForceReply(selective=False)
+                        pesan = "Ok, berikan saya link youtubenya"
+                        bot.sendMessage(uid, pesan, reply_markup=markup)
+                        self.__position.append(dict(uid=uid, position="yt"))
+                    else:
+                        self.download(uid, url[1], ytlink=True)
+                elif pesan.startswith("/start"):
+                    pesan += "/dl [query]\n"
+                    pesan += "Contoh:\n"
+                    pesan += "/dl Noah\n"
+                    pesan += "/yt [url]\n"
+                    pesan += "Contoh:\n"
+                    pesan += "/yt https://youtu.be/y6e_kztXG04"
+                    bot.sendMessage(uid, pesan, disable_web_page_preview=True)
+                else:
+                    pesan = "Pesan tidak dikenali\n"
+                    pesan += "/dl [query]\n"
+                    pesan += "Contoh:\n"
+                    pesan += "/dl Noah\n"
+                    pesan += "/yt [url]\n"
+                    pesan += "Contoh:\n"
+                    pesan += "/yt https://youtu.be/y6e_kztXG04"
+                    bot.sendMessage(uid, pesan, disable_web_page_preview=True)
+        else:
+            bot.sendMessage(uid, "Bot hanya mengenali pesan yang berupa text ")
+
+    def _select_song(self, uid, query):
         arr = []
         results = self._song.get_data(query)
         if len(results) != 0:
@@ -133,18 +123,17 @@ class Downloader:
                         text=item["judul"], callback_data=item["id"])]
                 )
             markup = InlineKeyboardMarkup(inline_keyboard=arr)
-            for count, cek in enumerate(__MESSAGES_NOW__):
+            for count, cek in enumerate(MESSAGES_NOW):
                 if cek["uid"] == uid:
-                    bot.deleteMessage(
-                        telepot.message_identifier(cek["identifier"]))
-                    __MESSAGES_NOW__.pop(count)
+                    del_msg = telepot.message_identifier(cek["identifier"])
+                    bot.deleteMessage(del_msg)
+                    MESSAGES_NOW.pop(count)
             text = bot.sendMessage(uid, "Select song", reply_markup=markup)
             data = {"uid": uid, "identifier": text}
-            __MESSAGES_NOW__.append(data)
+            MESSAGES_NOW.append(data)
         else:
-            bot.sendMessage(
-                uid, "Query *%s* tidak ditemukan" % query, parse_mode="Markdown"
-            )
+            pesan = "Query *%s* tidak ditemukan" % query
+            bot.sendMessage(uid, pesan, parse_mode="Markdown")
         return "ok"
 
 
@@ -160,7 +149,7 @@ def index():
                 mp._received_msg(new_msg)
             else:
                 if new_msg.get("callback_query"):
-                    mp._received_msg(new_msg["callback_query"])
+                    mp.inline_markup(new_msg["callback_query"])
         return "ok"
     else:
         return "Ok"

@@ -54,12 +54,12 @@ class Main:
                         "image/jpeg",
                     )
                     audio.tag.save()
-                    return dict(success=True, judul=url.get("judul"))
+                    return dict(success=True, judul=url.get("judul"), msg="sukses bro!!")
                 else:
                     return dict(
                         success=False,
                         judul=None,
-                        msg="Ukuran %s Kebesaran. Minimal 7 Mb" % url.get(
+                        msg="Ukuran *%s* Kebesaran. Minimal 7 Mb" % url.get(
                             "judul"),
                     )
         else:
