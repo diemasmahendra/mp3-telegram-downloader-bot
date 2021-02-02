@@ -80,7 +80,7 @@ class Downloader:
                     if len(query) == 1:
                         markup = ForceReply(selective=False)
                         pesan = "Ok, berikan saya query lagu yang mau dicari"
-                        bot.sendMessage(uid, reply_markup=markup)
+                        bot.sendMessage(uid, pesan, reply_markup=markup)
                         self.__position.append(dict(uid=uid, position="dl"))
                     else:
                         self._select_song(uid, query[1])
@@ -96,18 +96,18 @@ class Downloader:
                 elif pesan.startswith("/start"):
                     pesan += "/dl [query]\n"
                     pesan += "Contoh:\n"
-                    pesan += "/dl Noah\n"
+                    pesan += "/dl Noah\n\n\t"
                     pesan += "/yt [url]\n"
-                    pesan += "Contoh:\n"
+                    pesan += "Contoh:\n\t"
                     pesan += "/yt https://youtu.be/y6e_kztXG04"
                     bot.sendMessage(uid, pesan, disable_web_page_preview=True)
                 else:
                     pesan = "Pesan tidak dikenali\n"
                     pesan += "/dl [query]\n"
                     pesan += "Contoh:\n"
-                    pesan += "/dl Noah\n"
+                    pesan += "/dl Noah\n\n\t"
                     pesan += "/yt [url]\n"
-                    pesan += "Contoh:\n"
+                    pesan += "Contoh:\n\t"
                     pesan += "/yt https://youtu.be/y6e_kztXG04"
                     bot.sendMessage(uid, pesan, disable_web_page_preview=True)
         else:
