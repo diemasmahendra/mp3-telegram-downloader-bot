@@ -54,6 +54,7 @@ class Downloader:
         return
 
     def _received_msg(self, new_msg):
+        print(new_msg)
         uid = new_msg["message"]["chat"]["id"]
         pesan = new_msg["message"].get("text")
         if pesan:
