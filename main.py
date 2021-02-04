@@ -7,7 +7,7 @@ import os
 
 app = Flask(__name__)
 
-bot = telepot.Bot("Your token bot")
+bot = telepot.Bot("1468139592:AAFoNdHFTpOWWeYQAyT4yAWbQ3Y6mPb-j_0")
 
 MESSAGES_NOW = []
 AFTER_DOWNLOAD = []
@@ -35,6 +35,7 @@ class Downloader:
 
     def inline_markup(self, new_msg):
         uid = new_msg["message"]["chat"]["id"]
+        print(new_msg)
         for count, msg in enumerate(MESSAGES_NOW):
             if msg["uid"] == uid:
                 MESSAGES_NOW.pop(count)  # Delete element if user reply
