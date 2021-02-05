@@ -19,8 +19,8 @@ class Downloader:
         self._bot = None
         self._song = Main()
 
-    def download(self, uid, query, ytlink=False, delete=None):
-        judul = str(int(time.time())) + ".mp3"
+    def download(self, uid, query, judul, ytlink=False, delete=None):
+        judul = judul + ".mp3"
         stts = self._song.get_source(query, judul, ytlink=ytlink)
         if delete:
             for index, item in enumerate(delete):
@@ -51,7 +51,8 @@ class Downloader:
                             ident, pesan, parse_mode="Markdown")
                         AFTER_DOWNLOAD.append(dict(uid=uid, identifier=down))
                         self.download(
-                            uid, new_msg["data"], delete=AFTER_DOWNLOAD)
+                            uid, new_msg["data"], judul, delete=AFTER_DOWNLOAD
+                        )
         return
 
     def _received_msg(self, new_msg):
@@ -72,7 +73,7 @@ class Downloader:
                             self.__position.pop(index)
                         if element["position"] == "yt":
                             self.__position.pop(index)
-                            return self.download(uid, pesan, ytlink=True)
+                            return self.download(uid, pesan, "ga ada", ytlink=True)
                 self._select_song(uid, pesan)
             else:
 
@@ -93,23 +94,24 @@ class Downloader:
                         bot.sendMessage(uid, pesan, reply_markup=markup)
                         self.__position.append(dict(uid=uid, position="yt"))
                     else:
-                        self.download(uid, url[1], ytlink=True)
+                        self.download(uid, url[1], judul="ga ada", ytlink=True)
                 elif pesan.startswith("/start"):
+                    pesan = "Penggunaan\n"
                     pesan += "/dl [query]\n"
                     pesan += "Contoh:\n"
-                    pesan += "/dl Noah\n\n\t"
+                    pesan += "      /dl Noah\n\n"
                     pesan += "/yt [url]\n"
                     pesan += "Contoh:\n\t"
-                    pesan += "/yt https://youtu.be/y6e_kztXG04"
+                    pesan += "      /yt https://youtu.be/y6e_kztXG04"
                     bot.sendMessage(uid, pesan, disable_web_page_preview=True)
                 else:
                     pesan = "Pesan tidak dikenali\n"
                     pesan += "/dl [query]\n"
                     pesan += "Contoh:\n"
-                    pesan += "/dl Noah\n\n\t"
+                    pesan += "      /dl Noah\n\n"
                     pesan += "/yt [url]\n"
                     pesan += "Contoh:\n\t"
-                    pesan += "/yt https://youtu.be/y6e_kztXG04"
+                    pesan += "      /yt https://youtu.be/y6e_kztXG04"
                     bot.sendMessage(uid, pesan, disable_web_page_preview=True)
         else:
             bot.sendMessage(uid, "Bot hanya mengenali pesan yang berupa text ")
