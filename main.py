@@ -49,7 +49,10 @@ class Downloader:
                 delete = msg["identifier"]
                 data = new_msg["message"]["reply_markup"]["inline_keyboard"]
                 for item in data:
-                    if item[0]["callback_data"]["id"] == new_msg["data"]["id"]:
+                    if (
+                        eval(item[0]["callback_data"])["id"]
+                        == eval(new_msg["data"])["id"]
+                    ):
                         judul = item[0]["text"]
                         ident = telepot.message_identifier(delete)
                         bot.editMessageReplyMarkup(ident, reply_markup=None)
@@ -170,7 +173,8 @@ class Downloader:
                     [
                         InlineKeyboardButton(
                             text=item["judul"],
-                            callback_data=dict(id=item.get("id"), tipe=tipe),
+                            callback_data=str(
+                                dict(id=item.get("id"), tipe=tipe)),
                         )
                     ]
                 )
