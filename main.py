@@ -43,6 +43,7 @@ class Downloader:
 
     def inline_markup(self, new_msg):
         uid = new_msg["message"]["chat"]["id"]
+        data = eval(new_msg["data"])
         for count, msg in enumerate(MESSAGES_NOW):
             if msg["uid"] == uid:
                 MESSAGES_NOW.pop(count)  # Delete element if user reply
@@ -62,9 +63,9 @@ class Downloader:
                         AFTER_DOWNLOAD.append(dict(uid=uid, identifier=down))
                         self.download(
                             uid,
-                            eval(new_msg["data"])["id"],
+                            data["id"],
                             judul,
-                            tipe=eval(new_msg["data"])["tipe"],
+                            tipe=data["tipe"],
                             delete=AFTER_DOWNLOAD,
                         )
         return
