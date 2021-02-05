@@ -121,7 +121,7 @@ class Downloader:
                         self.__position.append(dict(uid=uid, position="yt"))
                     else:
                         try:
-                            a = requests.get(url).text
+                            a = requests.get(url[1]).text
                             judul = re.findall("<title>(.*?)</title>", a)[0].replace(
                                 " - YouTube", ""
                             )
