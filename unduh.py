@@ -5,6 +5,52 @@ import eyed3
 class Main:
     def __init__(self):
         self.__url = "https://www.downloadlagu321.net"
+        self.__joox = "https://afara.my.id/api/joox/"
+
+    def joox_search(self, query):
+        songs = []
+        params = {"q": query}
+        list_song = (
+            requests.get(self.__joox + "search/",
+                         params=params).json().get("songs")
+        )
+        if len(list_song) != 0:
+            for song in list_song:
+                title = song["singerName"] + " - " + song["title"]
+                id = song["id"]
+                songs.append(dict(judul=title, id=id))
+            return dict(status=True, songs=songs)
+        else:
+            return dict(status=False, songs=songs)
+
+    def joox_get_source(self, uid, filename):
+        params = {"id": uid}
+        res = requests.get(self.__joox + "show/", params=params).json()[0]
+        mp3_link = res["downloadLinks"]["mp3"]
+        get_size = requests.get(mp3_link, stream=True)
+        size = get_size.headers.get("Content-Length")
+        title = res["singerName"] + " - " + res["songName"]
+        with open(title + ".jpg", "wb") as f:
+            tmb = requests.get(res["thumbNail"]).content
+            f.write(tmb)
+        if 7200000 >= int(size):
+            with open(filename, "wb") as f:
+                response = requests.get(mp3_link).content
+                f.write(response)
+            _edit = eyed3.load(filename)
+            _edit.tag.title = title
+            _edit.tag.artist = res["singerName"]
+            _edit.tag.album = "Ismi Downloader"
+            _edit.tag.images.set(
+                3, open(title + ".jpg", "rb").read(), "image/jpeg")
+            _edit.tag.save()
+            return dict(success=True, judul=title, msg="sukses bro!!")
+        else:
+            return dict(
+                success=False,
+                judul=None,
+                msg="Ukuran *%s* Kebesaran. Minimal 7 Mb" % title,
+            )
 
     def get_data(self, query):
         array = []
@@ -12,16 +58,13 @@ class Main:
             self.__url + "/api/search/%s" % query.replace(" ", "%20"), verify=False
         ).json()
         if len(data) != 0:
-            array.extend(
-                [
-                    {
-                        "judul": item.get("title"),
-                        "id": item.get("id"),
-                    }
-                    for item in data
-                ]
-            )
-        return array
+            for item in data:
+                judul = item.get("title")
+                id = item.get("id")
+                array.append(dict(judul=judul, id=id))
+            return dict(status=True, songs=array)
+        else:
+            return dict(status=False, songs=array)
 
     def get_source(self, raw_link, filename, ytlink=False):
         # url = "https://michaelbelgium.me/ytconverter/convert.php?youtubelink=https://www.youtube.com/watch?v="
@@ -45,16 +88,18 @@ class Main:
                     with open(thumb, "wb") as f:
                         f.write(requests.get(url.get("thumbnail")).content)
                     audio = eyed3.load(filename)
-                    audio.tag.title = url.get("judul").replace('.mp3', '')
+                    audio.tag.title = url.get("judul").replace(".mp3", "")
                     audio.tag.artist = "Ismrwtbot"
                     audio.tag.album = "Ismi Downloader"
                     audio.tag.images.set(
                         3,
-                        open(thumb, 'rb').read(),
+                        open(thumb, "rb").read(),
                         "image/jpeg",
                     )
                     audio.tag.save()
-                    return dict(success=True, judul=url.get("judul"), msg="sukses bro!!")
+                    return dict(
+                        success=True, judul=url.get("judul"), msg="sukses bro!!"
+                    )
                 else:
                     return dict(
                         success=False,

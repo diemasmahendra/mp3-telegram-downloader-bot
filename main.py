@@ -19,9 +19,15 @@ class Downloader:
         self._bot = None
         self._song = Main()
 
-    def download(self, uid, query, judul, ytlink=False, delete=None):
+    def download(self, uid, query, judul, tipe=None, ytlink=False, delete=None):
         judul = judul + ".mp3"
-        stts = self._song.get_source(query, judul, ytlink=ytlink)
+        if tipe is not None:
+            if tipe == "joox":
+                self._song.joox_get_source(query, judul)
+            if tipe == "dl":
+                stts = self._song.get_source(query, judul, ytlink=ytlink)
+        else:
+            stts = self._song.get_source(query, judul, ytlink=ytlink)
         if delete:
             for index, item in enumerate(delete):
                 if uid == item["uid"]:
@@ -35,7 +41,6 @@ class Downloader:
 
     def inline_markup(self, new_msg):
         uid = new_msg["message"]["chat"]["id"]
-        print(new_msg)
         for count, msg in enumerate(MESSAGES_NOW):
             if msg["uid"] == uid:
                 MESSAGES_NOW.pop(count)  # Delete element if user reply
@@ -51,7 +56,11 @@ class Downloader:
                             ident, pesan, parse_mode="Markdown")
                         AFTER_DOWNLOAD.append(dict(uid=uid, identifier=down))
                         self.download(
-                            uid, new_msg["data"], judul, delete=AFTER_DOWNLOAD
+                            uid,
+                            new_msg["data"]["id"],
+                            judul,
+                            tipe=new_msg["data"]["tipe"],
+                            delete=AFTER_DOWNLOAD,
                         )
         return
 
@@ -70,11 +79,15 @@ class Downloader:
                 for index, element in enumerate(self.__position):
                     if uid == element["uid"]:
                         if element["position"] == "dl":
+                            tipe = "dl"
+                            self.__position.pop(index)
+                        if element["position"] == "joox":
+                            tipe = "dl"
                             self.__position.pop(index)
                         if element["position"] == "yt":
                             self.__position.pop(index)
                             return self.download(uid, pesan, "ga ada", ytlink=True)
-                self._select_song(uid, pesan)
+                self._select_song(uid, pesan, tipe)
             else:
 
                 if pesan.startswith("/dl"):
@@ -85,7 +98,7 @@ class Downloader:
                         bot.sendMessage(uid, pesan, reply_markup=markup)
                         self.__position.append(dict(uid=uid, position="dl"))
                     else:
-                        self._select_song(uid, query[1])
+                        self._select_song(uid, query[1], "dl")
                 elif pesan.startswith("/yt"):
                     url = pesan.split(" ", maxsplit=1)
                     if len(url) == 1:
@@ -95,6 +108,15 @@ class Downloader:
                         self.__position.append(dict(uid=uid, position="yt"))
                     else:
                         self.download(uid, url[1], judul="ga ada", ytlink=True)
+                elif pesan.startswith("/joox"):
+                    query = pesan.split(" ", maxsplit=1)
+                    if len(url) == 1:
+                        markup = ForceReply(selective=False)
+                        pesan = "Ok, berikan saya query yang mau dicari"
+                        bot.sendMessage(uid, pesan, reply_markup=markup)
+                        self.__position.append(dict(uid=uid, position="joox"))
+                    else:
+                        self._select_song(uid, query[1], "joox")
                 elif pesan.startswith("/start"):
                     pesan = "Penggunaan\n"
                     pesan += "/dl [query]\n"
@@ -116,14 +138,18 @@ class Downloader:
         else:
             bot.sendMessage(uid, "Bot hanya mengenali pesan yang berupa text ")
 
-    def _select_song(self, uid, query):
+    def _select_song(self, uid, query, tipe):
         arr = []
         results = self._song.get_data(query)
-        if len(results) != 0:
-            for item in results:
+        if results.get("status"):
+            for item in results.get("songs"):
                 arr.append(
-                    [InlineKeyboardButton(
-                        text=item["judul"], callback_data=item["id"])]
+                    [
+                        InlineKeyboardButton(
+                            text=item["judul"],
+                            callback_data=dict(uid=item.get("id"), tipe=tipe),
+                        )
+                    ]
                 )
             markup = InlineKeyboardMarkup(inline_keyboard=arr)
             for count, cek in enumerate(MESSAGES_NOW):
