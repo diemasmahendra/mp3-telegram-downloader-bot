@@ -96,6 +96,10 @@ class Downloader:
                                 judul = re.findall("<title>(.*?)</title>", a)[
                                     0
                                 ].replace(" - YouTube", "")
+                                judul = "_".join(
+                                    [i for i in re.findall(
+                                        "\w*", judul) if i != ""]
+                                )
                                 return self.download(uid, pesan, judul, ytlink=True)
                             except Exception as err:
                                 print(err)
@@ -124,6 +128,10 @@ class Downloader:
                             a = requests.get(url[1]).text
                             judul = re.findall("<title>(.*?)</title>", a)[0].replace(
                                 " - YouTube", ""
+                            )
+                            judul = "_".join(
+                                [i for i in re.findall(
+                                    "\w*", judul) if i != ""]
                             )
                             self.download(
                                 uid, url[1], judul=judul, ytlink=True)
