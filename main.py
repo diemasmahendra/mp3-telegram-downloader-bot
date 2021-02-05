@@ -43,17 +43,16 @@ class Downloader:
 
     def inline_markup(self, new_msg):
         uid = new_msg["message"]["chat"]["id"]
-        data = eval(new_msg["data"])
+        id = eval(new_msg["data"])["id"]
+        tipe = eval(new_msg["data"])["tipe"]
         for count, msg in enumerate(MESSAGES_NOW):
             if msg["uid"] == uid:
                 MESSAGES_NOW.pop(count)  # Delete element if user reply
                 delete = msg["identifier"]
                 data = new_msg["message"]["reply_markup"]["inline_keyboard"]
                 for item in data:
-                    if (
-                        eval(item[0]["callback_data"])["id"]
-                        == eval(new_msg["data"])["id"]
-                    ):
+                    call_id = eval(item[0]["callback_data"])["id"]
+                    if call_id == id:
                         judul = item[0]["text"]
                         ident = telepot.message_identifier(delete)
                         bot.editMessageReplyMarkup(ident, reply_markup=None)
@@ -63,9 +62,9 @@ class Downloader:
                         AFTER_DOWNLOAD.append(dict(uid=uid, identifier=down))
                         self.download(
                             uid,
-                            data["id"],
+                            id,
                             judul,
-                            tipe=data["tipe"],
+                            tipe=tipe,
                             delete=AFTER_DOWNLOAD,
                         )
         return
