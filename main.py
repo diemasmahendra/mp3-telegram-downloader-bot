@@ -62,9 +62,9 @@ class Downloader:
                         AFTER_DOWNLOAD.append(dict(uid=uid, identifier=down))
                         self.download(
                             uid,
-                            new_msg["data"]["id"],
+                            eval(new_msg["data"])["id"],
                             judul,
-                            tipe=new_msg["data"]["tipe"],
+                            tipe=eval(new_msg["data"])["tipe"],
                             delete=AFTER_DOWNLOAD,
                         )
         return
