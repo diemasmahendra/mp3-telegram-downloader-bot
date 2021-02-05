@@ -130,7 +130,7 @@ class Downloader:
 
                 elif pesan.startswith("/joox"):
                     query = pesan.split(" ", maxsplit=1)
-                    if len(url) == 1:
+                    if len(query) == 1:
                         markup = ForceReply(selective=False)
                         pesan = "Ok, berikan saya query yang mau dicari"
                         bot.sendMessage(uid, pesan, reply_markup=markup)
