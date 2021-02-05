@@ -1,8 +1,10 @@
 from telepot.namedtuple import InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
 from flask import Flask, request
 from unduh import Main
+import requests
 import telepot
 import time
+import re
 import os
 
 app = Flask(__name__)
@@ -47,7 +49,7 @@ class Downloader:
                 delete = msg["identifier"]
                 data = new_msg["message"]["reply_markup"]["inline_keyboard"]
                 for item in data:
-                    if item[0]["callback_data"] == new_msg["data"]:
+                    if item[0]["callback_data"]["id"] == new_msg["data"]["id"]:
                         judul = item[0]["text"]
                         ident = telepot.message_identifier(delete)
                         bot.editMessageReplyMarkup(ident, reply_markup=None)
@@ -82,11 +84,19 @@ class Downloader:
                             tipe = "dl"
                             self.__position.pop(index)
                         if element["position"] == "joox":
-                            tipe = "dl"
+                            tipe = "joox"
                             self.__position.pop(index)
                         if element["position"] == "yt":
                             self.__position.pop(index)
-                            return self.download(uid, pesan, "ga ada", ytlink=True)
+                            try:
+                                a = request.get(pesan).text
+                                judul = re.findall("<title>(.*?)</title>", a)[
+                                    0
+                                ].replace(" - YouTube", "")
+                                return self.download(uid, pesan, judul, ytlink=True)
+                            except Exception as err:
+                                print(err)
+                                return err
                 self._select_song(uid, pesan, tipe)
             else:
 
@@ -107,7 +117,17 @@ class Downloader:
                         bot.sendMessage(uid, pesan, reply_markup=markup)
                         self.__position.append(dict(uid=uid, position="yt"))
                     else:
-                        self.download(uid, url[1], judul="ga ada", ytlink=True)
+                        try:
+                            a = request.get(pesan).text
+                            judul = re.findall("<title>(.*?)</title>", a)[0].replace(
+                                " - YouTube", ""
+                            )
+                            self.download(
+                                uid, url[1], judul=judul, ytlink=True)
+                        except Exception as err:
+                            print(err)
+                            return err
+
                 elif pesan.startswith("/joox"):
                     query = pesan.split(" ", maxsplit=1)
                     if len(url) == 1:
@@ -140,14 +160,17 @@ class Downloader:
 
     def _select_song(self, uid, query, tipe):
         arr = []
-        results = self._song.get_data(query)
+        if tipe == "joox":
+            results = self._song.joox_search(query)
+        else:
+            results = self._song.youtube_search(query)
         if results.get("status"):
             for item in results.get("songs"):
                 arr.append(
                     [
                         InlineKeyboardButton(
                             text=item["judul"],
-                            callback_data=dict(uid=item.get("id"), tipe=tipe),
+                            callback_data=dict(id=item.get("id"), tipe=tipe),
                         )
                     ]
                 )

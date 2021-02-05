@@ -52,7 +52,7 @@ class Main:
                 msg="Ukuran *%s* Kebesaran. Minimal 7 Mb" % title,
             )
 
-    def get_data(self, query):
+    def youtube_search(self, query):
         array = []
         data = requests.get(
             self.__url + "/api/search/%s" % query.replace(" ", "%20"), verify=False
