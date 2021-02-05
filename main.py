@@ -92,7 +92,7 @@ class Downloader:
                         if element["position"] == "yt":
                             self.__position.pop(index)
                             try:
-                                a = request.get(pesan).text
+                                a = requests.get(pesan).text
                                 judul = re.findall("<title>(.*?)</title>", a)[
                                     0
                                 ].replace(" - YouTube", "")
@@ -121,7 +121,7 @@ class Downloader:
                         self.__position.append(dict(uid=uid, position="yt"))
                     else:
                         try:
-                            a = request.get(pesan).text
+                            a = requests.get(pesan).text
                             judul = re.findall("<title>(.*?)</title>", a)[0].replace(
                                 " - YouTube", ""
                             )
