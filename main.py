@@ -25,7 +25,7 @@ class Downloader:
         judul = judul + ".mp3"
         if tipe is not None:
             if tipe == "joox":
-                self._song.joox_get_source(query, judul)
+                stts = self._song.joox_get_source(query, judul)
             if tipe == "dl":
                 stts = self._song.get_source(query, judul, ytlink=ytlink)
         else:
