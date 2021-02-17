@@ -9,7 +9,7 @@ import os
 
 app = Flask(__name__)
 
-bot = telepot.Bot("Your token bot")
+bot = telepot.Bot("AAEdr4CytdsEpTijPpOp_mZ81fgFkhx8TH0")
 
 MESSAGES_NOW = []
 AFTER_DOWNLOAD = []
